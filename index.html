@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streaming Platform</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#141414;
+    color:white;
+}
+
+header{
+    position:fixed;
+    top:0;
+    width:100%;
+    background:rgba(0,0,0,.85);
+    padding:15px 40px;
+    z-index:100;
+}
+
+.logo{
+    color:#e50914;
+    font-size:32px;
+    font-weight:bold;
+}
+
+.hero{
+    height:80vh;
+    background:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1600')
+    center/cover;
+    display:flex;
+    align-items:end;
+    padding:60px;
+}
+
+.hero-content{
+    max-width:600px;
+}
+
+.hero h1{
+    font-size:52px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+.btn{
+    background:#e50914;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.section{
+    padding:40px;
+}
+
+.section h2{
+    margin-bottom:20px;
+}
+
+.movies{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:20px;
+}
+
+.movie{
+    background:#222;
+    border-radius:8px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.movie:hover{
+    transform:scale(1.05);
+}
+
+.movie img{
+    width:100%;
+    height:320px;
+    object-fit:cover;
+}
+
+.movie-title{
+    padding:12px;
+}
+
+.player-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.player-box{
+    width:90%;
+    max-width:1000px;
+}
+
+.player-box video{
+    width:100%;
+}
+
+.close{
+    float:right;
+    margin-bottom:10px;
+    padding:8px 14px;
+    cursor:pointer;
+}
+
+.comment-section{
+    padding:40px;
+    max-width:700px;
+}
+
+.comment-section h2{
+    margin-bottom:20px;
+}
+
+.comment-form{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:30px;
+}
+
+.comment-form input,
+.comment-form textarea{
+    background:#222;
+    border:1px solid #333;
+    color:white;
+    padding:10px;
+    border-radius:6px;
+    font-size:14px;
+    resize:vertical;
+}
+
+.comment-form button{
+    background:#e50914;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    align-self:flex-start;
+}
+
+.comment-form button:hover{
+    background:#b00710;
+}
+
+.comment-list{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.comment-item{
+    background:#1c1c1c;
+    border-radius:8px;
+    padding:14px 16px;
+}
+
+.comment-name{
+    font-weight:bold;
+    color:#e50914;
+    margin-bottom:4px;
+}
+
+.admin-badge{
+    background:#e50914;
+    color:white;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:10px;
+    margin-left:8px;
+    vertical-align:middle;
+}
+
+.comment-text{
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.comment-time{
+    font-size:12px;
+    color:#888;
+    margin-top:6px;
+}
+
+.comment-empty{
+    color:#888;
+    font-size:14px;
+}
+
+.comment-delete{
+    background:#e50914;
+    color:white;
+    border:none;
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:12px;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+.comment-delete:hover{
+    background:#b00710;
+}
+
+.comment-pin{
+    background:#333;
+    color:white;
+    border:none;
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:12px;
+    cursor:pointer;
+    margin-top:8px;
+    margin-right:6px;
+}
+
+.comment-pin:hover{
+    background:#555;
+}
+
+.comment-pin.pinned{
+    background:#e6a700;
+    color:#1c1c1c;
+}
+
+.pinned-label{
+    color:#e6a700;
+    font-size:11px;
+    margin-left:8px;
+}
+
+.comment-reply-btn{
+    background:#333;
+    color:white;
+    border:none;
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:12px;
+    cursor:pointer;
+    margin-top:8px;
+    margin-right:6px;
+}
+
+.comment-reply-btn:hover{
+    background:#555;
+}
+
+.reply-form{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:10px;
+}
+
+.reply-form textarea{
+    background:#222;
+    border:1px solid #333;
+    color:white;
+    padding:8px;
+    border-radius:6px;
+    font-size:13px;
+    resize:vertical;
+}
+
+.reply-form button{
+    background:#e50914;
+    color:white;
+    border:none;
+    padding:6px 14px;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    align-self:flex-start;
+}
+
+.reply-form button:hover{
+    background:#b00710;
+}
+
+.reply-list{
+    margin-top:12px;
+    padding-left:16px;
+    border-left:2px solid #333;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.reply-item{
+    background:#161616;
+    border-radius:6px;
+    padding:10px 12px;
+}
+
+.reply-name{
+    font-weight:bold;
+    color:#e50914;
+    font-size:13px;
+    margin-bottom:3px;
+}
+
+.reply-text{
+    font-size:13px;
+    line-height:1.5;
+}
+
+.reply-time{
+    font-size:11px;
+    color:#888;
+    margin-top:4px;
+}
+
+.reply-delete{
+    background:#e50914;
+    color:white;
+    border:none;
+    padding:2px 8px;
+    border-radius:4px;
+    font-size:11px;
+    cursor:pointer;
+    margin-top:6px;
+}
+
+.reply-delete:hover{
+    background:#b00710;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">STREAMFLIX</div>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Film Unggulan</h1>
+        <p>
+            Platform streaming modern dan gratis untuk menampilkan
+            movie terbaru,DISARANKAN MENGGUNAKAN BRAVE ATAU EXTENSION ANTI IKLAN!!!.
+        </p>
+        <button class="btn" onclick="playVideo('https://playmogo.com/e/eechpsvgtmes')">
+    Tonton Sekarang
+        </button>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Daftar Video</h2>
+
+    <div class="movies">
+
+         
+    <div class="movie" onclick="playVideo('https://playmogo.com/e/x5p5ha09brwg')">
+    <img src="csm1.jpg">
+    <div class="movie-title">Chainsaw Man The Movie</div>
+</div>
+
+        <div class="movie" onclick="playVideo('https://playmogo.com/e/yx896epi6y3l')">
+            <img src="knymov.jpg">
+            <div class="movie-title">KNY Infinity Castle</div>
+        </div>
+
+        <div class="movie" onclick="playVideo('https://player.vimeo.com/video/1201103206?title=0&byline=0&portrait=0')">
+            <img src="lookback.jpg">
+            <div class="movie-title">Look Back</div>
+        </div>
+        <div class="movie" onclick="playVideo('https://playmogo.com/e/eechpsvgtmes')">
+              <img src="jntt.jpg">
+          <div class="movie-title">Jose No Tora Tora</div>
+    </div>
+    </div>
+</section>
+
+<section class="comment-section">
+    <h2>💬 Komentar / Diskusi</h2>
+
+    <button id="loginBtn" style="margin-bottom:15px;padding:10px 18px;background:#222;color:white;border:1px solid #444;border-radius:6px;cursor:pointer;">
+        Login Google
+    </button>
+    <div id="userInfo" style="margin-bottom:15px;font-size:14px;color:#aaa;"></div>
+
+    <div class="comment-form">
+        <input type="text" id="comment-name" placeholder="Nama kamu" />
+        <textarea id="comment-text" rows="3" placeholder="Tulis komentar..."></textarea>
+        <button onclick="kirimKomentar()">Kirim</button>
+    </div>
+
+    <div class="comment-list" id="comment-list">
+        <p class="comment-empty">Memuat komentar...</p>
+    </div>
+</section>
+
+<div class="player-modal" id="modal">
+    <div class="player-box">
+        <button class="close" onclick="closePlayer()">Tutup</button>
+        <iframe id="player-iframe" width="100%" height="560"
+            allow="autoplay; fullscreen" allowfullscreen frameborder="0"
+            style="border:none;">
+        </iframe>
+    </div>
+</div>
+
+<script>
+const modal = document.getElementById("modal");
+const playerIframe = document.getElementById("player-iframe");
+
+function playVideo(url) {
+    playerIframe.src = url;
+    modal.style.display = "flex";
+}
+
+function closePlayer() {
+    playerIframe.src = "";
+    modal.style.display = "none";
+}
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getDatabase, ref, push, onValue, serverTimestamp, remove, update
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCSijHOkredIwSu3GstjqP_-zuqx8Dsx-4",
+    authDomain: "komen-stream.firebaseapp.com",
+    databaseURL: "https://komen-stream-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "komen-stream",
+    storageBucket: "komen-stream.firebasestorage.app",
+    messagingSenderId: "603251140361",
+    appId: "1:603251140361:web:a624970047514dc27995d8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const commentsRef = ref(db, "comments");
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// GANTI dengan UID Google kamu sendiri (lihat di console setelah login pertama kali)
+const ADMIN_UID = "2CIV0RaX9YNFOjOND6FOOKTPhar2";
+
+let currentUser = null;
+
+let lastSnapshotData = null;
+
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    const loginBtn = document.getElementById("loginBtn");
+    const userInfo = document.getElementById("userInfo");
+
+    if (user) {
+        loginBtn.textContent = "Logout (" + user.displayName + ")";
+        userInfo.textContent = user.uid === ADMIN_UID ? "🔥 Kamu login sebagai Admin" : "";
+        console.log("UID kamu:", user.uid);
+    } else {
+        loginBtn.textContent = "Login Google";
+        userInfo.textContent = "";
+    }
+
+    renderComments(lastSnapshotData);
+});
+
+document.getElementById("loginBtn").onclick = async () => {
+    if (currentUser) {
+        await auth.signOut();
+    } else {
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+};
+
+// Kirim komentar
+window.kirimKomentar = function () {
+    const nameInput = document.getElementById("comment-name");
+    const textInput = document.getElementById("comment-text");
+    const name = nameInput.value.trim();
+    const text = textInput.value.trim();
+
+    if (!name || !text) {
+        alert("Isi nama dan komentar dulu ya!");
+        return;
+    }
+
+    push(commentsRef, {
+        uid: currentUser ? currentUser.uid : null,
+        name: currentUser ? currentUser.displayName : name,
+        text: text,
+        time: serverTimestamp()
+    });
+
+    nameInput.value = "";
+    textInput.value = "";
+};
+
+// Tampilkan komentar realtime
+const list = document.getElementById("comment-list");
+
+onValue(commentsRef, (snapshot) => {
+    lastSnapshotData = snapshot.val();
+    renderComments(lastSnapshotData);
+});
+
+function renderComments(data) {
+    list.innerHTML = "";
+
+    if (!data) {
+        list.innerHTML = '<p class="comment-empty">Belum ada komentar. Jadi yang pertama!</p>';
+        return;
+    }
+
+    const items = Object.entries(data).sort((a, b) => {
+        const pinA = a[1].pinned ? 1 : 0;
+        const pinB = b[1].pinned ? 1 : 0;
+        if (pinA !== pinB) return pinB - pinA;
+        return (a[1].time || 0) - (b[1].time || 0);
+    });
+
+    items.forEach(([key, c]) => {
+        const div = document.createElement("div");
+        div.className = "comment-item";
+
+        const date = c.time ? new Date(c.time).toLocaleString("id-ID") : "";
+        const isCommentAdmin = c.uid === ADMIN_UID;
+        const isViewerAdmin = currentUser && currentUser.uid === ADMIN_UID;
+
+        const deleteBtn = isViewerAdmin
+            ? `<button class="comment-delete" onclick="hapusKomentar('${key}')">Hapus</button>`
+            : "";
+
+        const pinBtn = isViewerAdmin
+            ? `<button class="comment-pin ${c.pinned ? "pinned" : ""}" onclick="togglePin('${key}', ${!c.pinned})">${c.pinned ? "📌 Lepas Pin" : "📌 Pin"}</button>`
+            : "";
+
+        const adminBadge = isCommentAdmin ? '<span class="admin-badge">🔥 Admin</span>' : "";
+        const pinnedLabel = c.pinned ? '<span class="pinned-label">📌 Disematkan</span>' : "";
+
+        const replyBtn = currentUser
+            ? `<button class="comment-reply-btn" onclick="toggleReplyForm('${key}')">💬 Balas</button>`
+            : "";
+
+        // List balasan
+        let repliesHtml = "";
+        if (c.replies) {
+            const replyItems = Object.entries(c.replies).sort((a, b) => (a[1].time || 0) - (b[1].time || 0));
+            repliesHtml = '<div class="reply-list">' + replyItems.map(([rkey, r]) => {
+                const rIsAdmin = r.uid === ADMIN_UID;
+                const rBadge = rIsAdmin ? '<span class="admin-badge">🔥 Admin</span>' : "";
+                const rDate = r.time ? new Date(r.time).toLocaleString("id-ID") : "";
+                const rDeleteBtn = isViewerAdmin
+                    ? `<button class="reply-delete" onclick="hapusBalasan('${key}', '${rkey}')">Hapus</button>`
+                    : "";
+                return `
+                    <div class="reply-item">
+                        <div class="reply-name">${escapeHtml(r.name)}${rBadge}</div>
+                        <div class="reply-text">${escapeHtml(r.text)}</div>
+                        <div class="reply-time">${rDate}</div>
+                        ${rDeleteBtn}
+                    </div>
+                `;
+            }).join("") + '</div>';
+        }
+
+        div.innerHTML = `
+            <div class="comment-name">${escapeHtml(c.name)}${adminBadge}${pinnedLabel}</div>
+            <div class="comment-text">${escapeHtml(c.text)}</div>
+            <div class="comment-time">${date}</div>
+            ${replyBtn}${pinBtn}${deleteBtn}
+            <div class="reply-form" id="reply-form-${key}" style="display:none;">
+                <textarea id="reply-text-${key}" rows="2" placeholder="Tulis balasan..."></textarea>
+                <button onclick="kirimBalasan('${key}')">Kirim Balasan</button>
+            </div>
+            ${repliesHtml}
+        `;
+        list.appendChild(div);
+    });
+}
+
+window.hapusKomentar = function (key) {
+    if (confirm("Hapus komentar ini?")) {
+        remove(ref(db, "comments/" + key));
+    }
+};
+
+window.togglePin = function (key, newState) {
+    update(ref(db, "comments/" + key), { pinned: newState });
+};
+
+window.toggleReplyForm = function (key) {
+    const form = document.getElementById("reply-form-" + key);
+    form.style.display = form.style.display === "none" ? "flex" : "none";
+};
+
+window.kirimBalasan = function (key) {
+    if (!currentUser) {
+        alert("Login dulu buat balas komentar ya!");
+        return;
+    }
+
+    const textInput = document.getElementById("reply-text-" + key);
+    const text = textInput.value.trim();
+
+    if (!text) {
+        alert("Tulis balasan dulu ya!");
+        return;
+    }
+
+    push(ref(db, "comments/" + key + "/replies"), {
+        uid: currentUser.uid,
+        name: currentUser.displayName,
+        text: text,
+        time: serverTimestamp()
+    });
+
+    textInput.value = "";
+    document.getElementById("reply-form-" + key).style.display = "none";
+};
+
+window.hapusBalasan = function (commentKey, replyKey) {
+    if (confirm("Hapus balasan ini?")) {
+        remove(ref(db, "comments/" + commentKey + "/replies/" + replyKey));
+    }
+};
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
